@@ -1,9 +1,11 @@
 const mongoose=require('mongoose');
 const express=require('express');
-const users=require('./routes/users.js');
 const app=express();
 
-app.use(express.json());    //***
+const users=require('./routes/users.js');
+const auth=require('./routes/auth.js');
+
+app.use(express.json());    //***for post,put request
 app.use(express.urlencoded());
 
 
@@ -15,4 +17,5 @@ app.listen(3000, ()=> { console.log("Listening port 3000..."); })
 
 //routes
 app.use('/api/users',users); 
+app.use('/api/auth',auth); 
 
