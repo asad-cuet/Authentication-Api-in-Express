@@ -1,6 +1,7 @@
 const mongoose=require('mongoose');
 const express=require('express');
 const app=express();
+const config=require('config');
 
 const users=require('./routes/users.js');
 const auth=require('./routes/auth.js');
@@ -8,6 +9,12 @@ const auth=require('./routes/auth.js');
 app.use(express.json());    //***for post,put request
 app.use(express.urlencoded());
 
+
+if(!config.get('jwtPrivateKey'))
+{
+    console.log('Error: jwtPrivateKey not found.');
+    process.exit(1);
+}
 
 //connection
 mongoose.connect('mongodb://localhost/authentication_db')

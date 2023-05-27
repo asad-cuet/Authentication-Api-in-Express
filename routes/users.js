@@ -38,6 +38,8 @@ router.post('/',async(req,res)=> {
     user= new User(lodash.pick(req.body,['name','email','password']));
     const salt=await bcrypt.genSalt(10);
     const hashed= await bcrypt.hash(user.password,salt);
+
+    user.password=hashed;
     await user.save();
 
     res.send(lodash.pick(user,['_id','name','email']));

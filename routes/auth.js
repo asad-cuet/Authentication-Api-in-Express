@@ -1,14 +1,17 @@
-const {User,validate}= require('../models/users.js');
-const lodash=require('lodash');    //npm i lodash
-const bcrypt=require('bcrypt');    //npm i bcrypt
+const {User}= require('../models/users.js');
+const jwt=require('jsonwebtoken');   
+const config=require('config');   
+const lodash=require('lodash');   
+const bcrypt=require('bcrypt');    
 const express=require('express');
 const router=express.Router();
 const app=express();
+const Joi=require('joi');
 
 
 
 router.post('/',async(req,res)=> {         
-    const {error}=validate(req.body);
+    const {error}=validateUser(req.body);
     if(error)
     {
         return res.status(400).send(error.details[0].message);
@@ -17,20 +20,32 @@ router.post('/',async(req,res)=> {
     console.log('Body',req.body.email);
 
     let user=await User.findOne({email:req.body.email});
-    if(user)
+    if(!user)
     {
-        return res.status(400).send('Email already exists.');
+        return res.status(400).send('Invalid Email or Password.');
     }
 
-    user= new User(lodash.pick(req.body,['name','email','password']));
-    const salt=await bcrypt.genSalt(10);
-    const hashed= await bcrypt.hash(user.password,salt);
-    await user.save();
+    const validPassword=await bcrypt.compare(req.body.password,user.password);
+    if(!validPassword) 
+    {
+        return res.status(400).send('Invalid Email or Password.');
+    }
 
-    res.send(lodash.pick(user,['_id','name','email']));
+    const token=jwt.sign({_id:user._id},config.get('jwtPrivateKey'));
+
+    res.send(token);
+
 });
 
+function validateUser(req)
+{
+    const schema= Joi.object({
+        email: Joi.string().min(5).max(255).required().email(),
+        password: Joi.string().min(5).max(255).required(),
+    });
 
+    return schema.validate(req);
+}
 
 module.exports=router;
 
