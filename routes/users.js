@@ -1,9 +1,13 @@
 const {User,validate}= require('../models/users.js');
 const lodash=require('lodash');    //npm i lodash
 const bcrypt=require('bcrypt');    //npm i bcrypt
+const jwt=require('jsonwebtoken');   
+const config=require('config');   
 const express=require('express');
 const router=express.Router();
 const app=express();
+const auth= require('../middleware/auth');
+const admin= require('../middleware/admin');
 
 
 
@@ -42,8 +46,24 @@ router.post('/',async(req,res)=> {
     user.password=hashed;
     await user.save();
 
-    res.send(lodash.pick(user,['_id','name','email']));
+    // res.send(lodash.pick(user,['_id','name','email']));
+    
+    //sending token in header
+    const token=user.generateAuthToken();
+    res.header('x-auth-token',token).send(lodash.pick(user,['_id','name','email']));
+
 });
+
+
+//makin guard by middleware
+router.get('/me',auth,async(req,res)=> {     
+    const user=await User.findById(req.user._id).select('-password');
+    res.send(user);
+    
+});
+
+//multiple middleware
+// router.get('/me',[auth,admin],async(req,res)=> {    }); 
 
 
 

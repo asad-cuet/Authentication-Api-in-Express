@@ -10,11 +10,12 @@ app.use(express.json());    //***for post,put request
 app.use(express.urlencoded());
 
 
-if(!config.get('jwtPrivateKey'))
-{
-    console.log('Error: jwtPrivateKey not found.');
-    process.exit(1);
-}
+//commenting for testing
+// if(!config.get('jwtPrivateKey'))
+// {
+//     console.log('Error: jwtPrivateKey not found.');
+//     process.exit(1);
+// }
 
 //connection
 mongoose.connect('mongodb://localhost/authentication_db')
