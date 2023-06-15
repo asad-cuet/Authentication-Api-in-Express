@@ -1,3 +1,6 @@
+require('express-async-errors');
+const error=require('./middleware/error');
+const winston=require('winston');
 const mongoose=require('mongoose');
 const express=require('express');
 const app=express();
@@ -6,11 +9,12 @@ const config=require('config');
 const users=require('./routes/users.js');
 const auth=require('./routes/auth.js');
 
-app.use(express.json());    //***for post,put request
-app.use(express.urlencoded());
+winston.add(new winston.transports.File({ filename: 'logfile.log' }));  //creates a error logfile
+
 
 
 //commenting for testing
+// set value by: set 2723_jwtPrivateKey=1234
 // if(!config.get('jwtPrivateKey'))
 // {
 //     console.log('Error: jwtPrivateKey not found.');
@@ -23,7 +27,15 @@ mongoose.connect('mongodb://localhost/authentication_db')
     .catch(err=> console.log('Could not connected to db..',err));
 app.listen(3000, ()=> { console.log("Listening port 3000..."); })
 
+
+app.use(express.json());    //***for post,put request
+// app.use(express.urlencoded());
+
+
 //routes
 app.use('/api/users',users); 
 app.use('/api/auth',auth); 
+
+//error middleware
+app.use(error);
 

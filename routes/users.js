@@ -8,6 +8,9 @@ const router=express.Router();
 const app=express();
 const auth= require('../middleware/auth');
 const admin= require('../middleware/admin');
+const errorHandler= require('../middleware/errorHandler');  //this can be done by express-async-errors package
+
+
 
 
 
@@ -39,28 +42,37 @@ router.post('/',async(req,res)=> {
 
     //or,
 
-    user= new User(lodash.pick(req.body,['name','email','password']));
-    const salt=await bcrypt.genSalt(10);
-    const hashed= await bcrypt.hash(user.password,salt);
-
-    user.password=hashed;
-    await user.save();
-
-    // res.send(lodash.pick(user,['_id','name','email']));
+    try {
+        user= new User(lodash.pick(req.body,['name','email','password']));
+        const salt=await bcrypt.genSalt(10);
+        const hashed= await bcrypt.hash(user.password,salt);
     
-    //sending token in header
-    const token=user.generateAuthToken();
-    res.header('x-auth-token',token).send(lodash.pick(user,['_id','name','email']));
+        user.password=hashed;
+        await user.save();
+    
+        // res.send(lodash.pick(user,['_id','name','email']));
+        
+        //sending token in header
+        const token=user.generateAuthToken();
+        res.header('x-auth-token',token).send(lodash.pick(user,['_id','name','email']));
+    }
+    catch(ex) {
+        next(ex);  
+    }
+
 
 });
 
 
 //makin guard by middleware
-router.get('/me',auth,async(req,res)=> {     
+router.get('/me',auth,errorHandler(async(req,res,next)=> {    //errorHandler running code inside try block. 
+                                                              
+
     const user=await User.findById(req.user._id).select('-password');
-    res.send(user);
+    res.send(users);
+ 
     
-});
+}));
 
 //multiple middleware
 // router.get('/me',[auth,admin],async(req,res)=> {    }); 

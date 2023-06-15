@@ -1,0 +1,2 @@
+{"level":"error","message":"users is not defined"}
+{"level":"error","message":"users is not defined users is not defined","stack":"ReferenceError: users is not defined\n    at D:\\Node Project\\authentication\\routes\\users.js:72:14\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)\n    at async D:\\Node Project\\authentication\\middleware\\errorHandler.js:5:13"}
