@@ -1,4 +1,5 @@
 require('express-async-errors');
+require('winston-mongodb');
 const error=require('./middleware/error');
 const winston=require('winston');
 const mongoose=require('mongoose');
@@ -10,6 +11,16 @@ const users=require('./routes/users.js');
 const auth=require('./routes/auth.js');
 
 winston.add(new winston.transports.File({ filename: 'logfile.log' }));  //creates a error logfile
+winston.add(new winston.transports.MongoDB({ db: 'mongodb://localhost/authentication_db' }));  //insert error
+//For uncaught exception
+process.on('uncaughtException',(ex)=>{
+    console.log('We got an uncaught exception.');
+    winston.error(ex.message);
+});
+
+
+//creating a error out of request.
+// throw new Error('Uncaught Error.');
 
 
 
