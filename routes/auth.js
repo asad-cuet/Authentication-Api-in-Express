@@ -111,14 +111,8 @@ router.get('/me',auth,errorHandler(async(req,res,next)=> {    //errorHandler run
 
 
 //logout
-router.get('/logout',auth,errorHandler(async(req,res,next)=> {    //errorHandler running code inside try block. 
-    const token= req.header('x-auth-token');
-    document.cookie = 'token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    localStorage.removeItem('token')
-    sessionStorage.removeItem('token')
-    return res.status(200).send('Logged Out Soccessfully');
-
-                             
+router.get('/logout',auth,errorHandler(async(req,res)=> {    //errorHandler running code inside try block. 
+    return res.send(200)         
 }));
 
 function validateUser(req)
