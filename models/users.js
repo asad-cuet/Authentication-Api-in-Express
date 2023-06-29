@@ -27,7 +27,7 @@ const userSchema=new mongoose.Schema({
 //model method
 userSchema.methods.generateAuthToken= function()
 {
-    const token=jwt.sign({_id:this._id, isAdmin:this.isAdmin},config.get('jwtPrivateKey'));
+    const token=jwt.sign({_id:this._id, isAdmin:this.isAdmin},config.get('jwtPrivateKey'));  //, { expiresIn: 31556926 }
     return token;
 }
 
